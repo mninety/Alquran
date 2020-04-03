@@ -130,7 +130,7 @@ public class VariableModule {
 	        Class.forName("com.mysql.jdbc.Driver");
 
 
-	        Ownconn=DriverManager.getConnection("jdbc:mysql://"+MySQLIP+"/"+DBName, dbusername, dbpassword);
+	        Ownconn=DriverManager.getConnection("jdbc:mysql://"+MySQLIP+"/"+DBName+"?useUnicode=yes&characterEncoding=UTF-8", dbusername, dbpassword);
 	        System.out.println("Connection: "+Ownconn);
 	        Missingfindout(7563,Ownconn);
 	        //PostAction(Ownconn);

@@ -185,9 +185,9 @@ public class HadisCollector {
 		
 		VariableModule variablemodule = new VariableModule();
 		ActionModule actiondo = new ActionModule();
-		WebDriver driver = actiondo.setup();
+		WebDriver driver = actiondo.setUp();
 		SOC soc = new SOC(driver);
-    	for(int t=50;t<100;t++)//MissinghadisIDArray.size()
+    	for(int t=1;t<MissinghadisIDArray.size();t++)//MissinghadisIDArray.size()
     	{
 		//driver.get(url);
 		//driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
@@ -201,13 +201,14 @@ public class HadisCollector {
     	for(int i=0; i<totalMaxArray.length;i++)
     	{
     		String[] MaxArray = totalMaxArray[i].split(",");
+    		//System.out.println("Max ID: "+MaxArray[0]+" : "+MaxArray[1]);
     		if(MissinghadisIDArray.get(t)<=Integer.parseInt(MaxArray[1]))
     		{
+    			//System.out.println("Chapter: "+MaxArray[0]);
+    			driver.get(url+"/chapter/"+MaxArray[0]);
+    			//driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
     			
-    			driver.get(url+"/chapter/"+(i+1));
-    			driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
-    			
-    			String sql="select hcTotalHadis from hadischapter where hcBookID=1 and hcChapterID="+(i+1);
+    			String sql="select hcTotalHadis from hadischapter where hcBookID=1 and hcChapterID="+MaxArray[0];
     			//System.out.println("SQL: "+sql);
     	    	String total=ActionModule.MysqlConnectionAction(sql, conn, ",");
     	    	total=total.substring(0, total.length()-1);
@@ -220,7 +221,8 @@ public class HadisCollector {
     	    		//System.out.println("HadisID: "+testcollector);
     	    		if(MissinghadisIDArray.get(t)==Integer.parseInt(testcollector))
     	    		{
-						
+    	    			//System.out.println("HadisID Found: "+testcollector);
+    	    			//System.out.println("Missing: "+MissinghadisIDArray.get(t));
 						testcollector1=soc.gethadisAR(j);
 						testcollector2=soc.gethadisNarratedby(j);
 						testcollector3=soc.gethadisBL(j);
@@ -234,7 +236,7 @@ public class HadisCollector {
 						//System.out.println("HadisNB : "+testcollector2);
 						//System.out.println("HadisBL : "+testcollector3);
 						//System.out.println("HadisSonod : "+testcollector4);
-						actiondo.MysqlHadisInsertData(MissinghadisIDArray.get(t), i+1, testcollector1, testcollector2, testcollector3, testcollector4, conn);
+						actiondo.MysqlHadisInsertData(MissinghadisIDArray.get(t), Integer.parseInt(MaxArray[0]), testcollector1, testcollector2, testcollector3, testcollector4, conn);
     	    			break;
     	    		}
     	    		else
@@ -256,6 +258,8 @@ public class HadisCollector {
 		//actiondo.MysqlHadisInsertData(Integer.parseInt(ActionModule.unicodeEngMaker(testcollector)), hdChapterID, testcollector1, testcollector2, testcollector3, testcollector4, variabledo.Ownconn);
     	}
     	System.out.println("****END****");
+    	
+    	driver.quit();
 	}
 	
 	public void ChapterCollectorAction(String url)

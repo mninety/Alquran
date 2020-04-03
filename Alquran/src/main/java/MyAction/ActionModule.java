@@ -74,14 +74,16 @@ import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.openqa.selenium.By;
+import org.openqa.selenium.PageLoadStrategy;
 import org.openqa.selenium.Platform;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.firefox.FirefoxBinary;
 import org.openqa.selenium.firefox.FirefoxDriver;
-
+import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
 import com.sun.javafx.geom.transform.GeneralTransform3D;
@@ -92,6 +94,8 @@ import com.sun.xml.internal.ws.wsdl.writer.document.Message;*/
 
 import Hadis.HadisCollector;
 import MyVariable.VariableModule;
+import io.github.bonigarcia.wdm.ChromeDriverManager;
+import io.github.bonigarcia.wdm.DriverManagerType;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import javafx.scene.control.Cell;
 /*import sun.audio.AudioPlayer;
@@ -205,11 +209,10 @@ public class ActionModule {
 		        //logActionModule.debug(sql+"\n");
 		        //InsertSQL insertsql = new InsertSQL(sql);
 		        
-		        System.out.println(sql+"\n");
-
-	        //stmt.executeUpdate(sql);
-	        //log.debug(" SUCCESS!\\n");
-	        //System.out.println(" SUCCESS!\n");
+		        System.out.println(sql);
+		        
+		        stmt.executeUpdate(sql);
+		        System.out.println(" SUCCESS!\n");
 
 	    } catch(SQLException se) {
 	        se.printStackTrace();
@@ -417,13 +420,78 @@ public class ActionModule {
 	    return driver;
 	}
 
-	public WebDriver setup()
+	public WebDriver setupChrome()
 	{
 		WebDriverManager.chromedriver().setup();
 		WebDriver driver = new ChromeDriver();
 		driver.manage().window().maximize();
 		return driver;
 	}
+	
+	public WebDriver setupFirefox()
+	{
+		WebDriverManager.firefoxdriver().setup();
+		WebDriver driver = new FirefoxDriver();
+		//driver.manage().window().maximize();
+		return driver;
+	}
+	
+	
+	public WebDriver setUp() 
+	{
+		WebDriver driver = null;
+		try {
+			//WebDriver driver;
+			TestData testdata = new TestData();
+			String browserName = testdata.properties.getProperty("browserName");
+		
+		if(browserName.equalsIgnoreCase("chrome")) {
+			WebDriverManager.chromedriver().setup();
+			driver = new ChromeDriver();
+			driver.manage().window().maximize();
+		}
+		else if(browserName.equalsIgnoreCase("firefox")) {
+			WebDriverManager.firefoxdriver().setup();
+			driver = new FirefoxDriver();
+		}
+		else if(browserName.equalsIgnoreCase("ie")) {
+			WebDriverManager.iedriver().setup();
+			driver = new InternetExplorerDriver();
+		}
+		else if(browserName.equalsIgnoreCase("edge")) {
+			WebDriverManager.edgedriver().setup();
+			driver = new EdgeDriver();
+		}
+
+		else if(browserName.equalsIgnoreCase("headless")) {
+			ChromeDriverManager.getInstance(DriverManagerType.CHROME).setup();
+			ChromeOptions chromeOptions = new ChromeOptions();
+			chromeOptions.addArguments("--headless");
+			chromeOptions.addArguments("--window-size=1920,1080");
+			chromeOptions.addArguments("--start-maximized");
+		    chromeOptions.addArguments("--allow-running-insecure-content");
+		    //chromeOptions.addArguments("--remote-debugging-port=9222");
+		    chromeOptions.addArguments("--whitelisted-ips"); 
+		    //chromeOptions.setBinary("/usr/bin/google-chrome");
+		    chromeOptions.addArguments("--disable-extensions"); // disabling extensions
+		    chromeOptions.addArguments("--disable-gpu"); // applicable to windows os only
+		    chromeOptions.addArguments("--disable-dev-shm-usage"); // overcome limited resource problems
+		    chromeOptions.addArguments("--no-sandbox"); // Bypass OS security model
+		    chromeOptions.addArguments("--disable-browser-side-navigation");
+		
+		    //chromeOptions.setPageLoadStrategy(PageLoadStrategy.NONE);
+			driver = new ChromeDriver(chromeOptions);
+
+			
+		}
+		
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return driver;
+	}
+
 	
     public static void writing(String wget) {
         try {

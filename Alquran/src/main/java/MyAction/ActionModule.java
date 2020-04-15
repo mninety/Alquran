@@ -261,14 +261,14 @@ public class ActionModule {
 	}
 	
 	
-	public void MysqlConnectionActionUpdate(String Myquery)
+	public static void MysqlConnectionActionUpdate(String Myquery, Connection conn)
 	{
 
 	    java.sql.Statement stmt = null;
 		    
 	    try {
 	    	//CommonOSModule.conn=MysqlConnection();
-	        stmt = variabledo.Ownconn.createStatement();
+	        stmt = conn.createStatement();
 	        stmt.executeUpdate(Myquery);
 	        //ConsolPrint("User is updated");
 		    stmt.close();
@@ -447,7 +447,12 @@ public class ActionModule {
 		
 		if(browserName.equalsIgnoreCase("chrome")) {
 			WebDriverManager.chromedriver().setup();
-			driver = new ChromeDriver();
+			//Create a instance of ChromeOptions class
+			ChromeOptions options = new ChromeOptions();
+
+			//Add chrome switch to disable notification - "**--disable-notifications**"
+			options.addArguments("--disable-notifications");
+			driver = new ChromeDriver(options);
 			driver.manage().window().maximize();
 		}
 		else if(browserName.equalsIgnoreCase("firefox")) {
@@ -478,7 +483,7 @@ public class ActionModule {
 		    chromeOptions.addArguments("--disable-dev-shm-usage"); // overcome limited resource problems
 		    chromeOptions.addArguments("--no-sandbox"); // Bypass OS security model
 		    chromeOptions.addArguments("--disable-browser-side-navigation");
-		
+		    chromeOptions.addArguments("--always-authorize-plugins"); //Prevent render printing
 		    //chromeOptions.setPageLoadStrategy(PageLoadStrategy.NONE);
 			driver = new ChromeDriver(chromeOptions);
 

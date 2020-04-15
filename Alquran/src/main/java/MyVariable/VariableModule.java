@@ -1,6 +1,8 @@
 package MyVariable;
 
 import MyAction.ActionModule;
+import PagesRepository.SOC;
+import Quran.QuranCollector;
 import Starting.MySQLPINGModule;
 import utils.TestData;
 
@@ -31,6 +33,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 
+import Firebug.FirebugModule;
 import Hadis.HadisCollector;
 
 //import com.sun.xml.internal.bind.v2.runtime.RuntimeUtil.ToStringAdapter;
@@ -119,6 +122,8 @@ public class VariableModule {
     	//System.out.println("Connection: "+actiondo.MysqlConnectionOwn());
     	
     	testdata= new TestData();
+    	HadisCollector hadiscollector = new HadisCollector();
+    	QuranCollector qurancollector = new QuranCollector();
     	String MySQLIP = testdata.properties.getProperty("MySQLIP");
     	String DBName = testdata.properties.getProperty("DBName");
     	String dbusername = testdata.properties.getProperty("dbusername");
@@ -132,9 +137,10 @@ public class VariableModule {
 
 	        Ownconn=DriverManager.getConnection("jdbc:mysql://"+MySQLIP+"/"+DBName+"?useUnicode=yes&characterEncoding=UTF-8", dbusername, dbpassword);
 	        System.out.println("Connection: "+Ownconn);
-	        Missingfindout(7563,Ownconn);
+	        //hadiscollector.InsertHadis(163, "http://ihadis.com/books/sahih-hadise-kudsi", Ownconn);
+	        //Missingfindout(4341,Ownconn);
+	        qurancollector.WordbyWordCollector("http://www.quranmazid.com/view/sura/", Ownconn);
 	        //PostAction(Ownconn);
-	        //writing(" Own Database Connected!\n");
 	    }catch(Exception e) {
 	        e.printStackTrace();
 	    }
@@ -175,11 +181,13 @@ public class VariableModule {
     	System.out.println("The End!!!");*/
     }
 
+
+
     public void Missingfindout(int max,Connection Ownconn)
     {
     	VariableModule variablemodule = new VariableModule();
     	HadisCollector hadiscollector = new HadisCollector();
-		String checkHistory="select hdHadisID from hadisdetails where hdBookID=1";
+		String checkHistory="select hdHadisID from hadisdetails where hdBookID=6";
 		//System.out.println("Select SQL: "+checkHistory);
 		String hadisID=ActionModule.MysqlConnectionAction(checkHistory, Ownconn, ",");
 		//System.out.println("HadisID: "+hadisID);
@@ -193,29 +201,46 @@ public class VariableModule {
     	for(int i=1;i<max;i++)
     	{
     			
+    			//System.out.println("I:"+i);
+    		if(bak<hadisIDArray.length)
+    		{
+    			
+    		
         		if(i==Integer.parseInt(hadisIDArray[bak]))
         		{
+        			//System.out.println("Matching: "+Integer.parseInt(hadisIDArray[bak]));
         			bak++;
+        			//System.out.println("BAK:"+bak);
         			continue;
         		}
         		else if(i<Integer.parseInt(hadisIDArray[bak]))
         		{
         			missinghadisArray.add(count, i);
-        			//System.out.println("Missing ID: "+missinghadisArray.get(count));
+        			System.out.println("Missing ID: "+missinghadisArray.get(count));
+        			count++;
+        		}
+    		}
+        	else
+        		{
+        			missinghadisArray.add(count, i);
+        			System.out.println("Missing ID: "+missinghadisArray.get(count));
         			count++;
         		}
         		
     	}
     	
     		System.out.println("Missing ID Total: "+count);
-	    	hadiscollector.MissingHadisCollector(missinghadisArray, "http://ihadis.com/books/bukhari", Ownconn);
+	    	hadiscollector.MissingHadisCollector(missinghadisArray, "http://ihadis.com/books/ibn-majah", Ownconn);
 	 
     	
     }
-	public void PostAction(Connection Ownconn) throws IOException
+
+    
+    public void PostAction(Connection Ownconn) throws IOException
 	{
 		
 		testdata = new TestData();
+		FirebugModule facebook = new FirebugModule();
 		String Post = testdata.properties.getProperty("Post");
 		String PostID = testdata.properties.getProperty("PostID");
 		System.out.println("Post: "+Post);
@@ -267,7 +292,7 @@ public class VariableModule {
 				String SuraName=ActionModule.MysqlConnectionAction("select snName_bl from suraname where snSuraID="+postArray[0], Ownconn, ",");
 				SuraName=SuraName.substring(0, SuraName.length()-1);
 				System.out.println("Data: "+"\""+dbData+"\""+" ---[সুরা "+SuraName+" "+ActionModule.unicodeMaker(postArray[0])+":"+ActionModule.unicodeMaker(ayatArray[0])+"-"+ActionModule.unicodeMaker(ayatArray[1])+"]");
-				//FirebugModule.FacebookLogin("\""+dbData+"\""+" ---[সুরা "+SuraName+" "+ActionModule.unicodeMaker(postArray[0])+":"+ActionModule.unicodeMaker(ayatArray[0])+"-"+ActionModule.unicodeMaker(ayatArray[1])+"]");
+				facebook.FacebookLogin("\""+dbData+"\""+" ---[সুরা "+SuraName+" "+ActionModule.unicodeMaker(postArray[0])+":"+ActionModule.unicodeMaker(ayatArray[0])+"-"+ActionModule.unicodeMaker(ayatArray[1])+"]");
 				
 				/*
 				for(int i=Integer.parseInt(ayatArray[0]);i<=Integer.parseInt(ayatArray[1]);i++)
@@ -301,7 +326,7 @@ public class VariableModule {
 				String SuraName=ActionModule.MysqlConnectionAction("select snName_bl from suraname where snSuraID="+postArray[0], Ownconn, ",");
 				SuraName=SuraName.substring(0, SuraName.length()-1);
 				System.out.println("Data: "+"\""+dbData+"\""+" ---[সুরা "+SuraName+" "+ActionModule.unicodeMaker(postArray[0])+":"+ActionModule.unicodeMaker(postArray[1])+"]");
-				//FirebugModule.FacebookLogin("\""+dbData+"\""+" ---[সুরা "+SuraName+" "+ActionModule.unicodeMaker(postArray[0])+":"+ActionModule.unicodeMaker(postArray[1])+"]");
+				facebook.FacebookLogin("\""+dbData+"\""+" ---[সুরা "+SuraName+" "+ActionModule.unicodeMaker(postArray[0])+":"+ActionModule.unicodeMaker(postArray[1])+"]");
 				/*
 				ActionModule.MysqlFBHInsertData(Integer.parseInt(postArray[0]),Integer.parseInt(postArray[1]),"",Integer.parseInt(postID),VariableModule.Ownconn);
 				ActionModule.writinginFile("Post=","");

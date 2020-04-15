@@ -18,7 +18,8 @@ public class HadisCollector {
 	
 	VariableModule variabledo;
 	ActionModule actiondo;
-	
+	public int temp=0;
+	public int chapter=1;
 	public void HadisCollectorAction(String url,int total,int hdChapterID, int MaxID)
 	{
 		String testcollector="";
@@ -173,93 +174,191 @@ public class HadisCollector {
 	}
 	
 
+    public void InsertHadis(int max, String url, Connection Ownconn)
+    {
+    	VariableModule variablemodule = new VariableModule();
+    	ActionModule actiondo = new ActionModule();
+		WebDriver driver = actiondo.setUp();
+		try {
+			String testcollector="";
+			String testcollector1="";
+			String testcollector2="";
+			String testcollector3="";
+			String testcollector4="";
+			
+			SOC soc = new SOC(driver);
+			String hcID=ActionModule.MysqlConnectionAction("select hcChapterID,hcMaxID,hcTotalHadis from hadischapter where hcBookID=7", Ownconn, ",");
+			hcID=hcID.substring(0, hcID.length()-1);
+			String[] totalMaxArray = hcID.split("\n");
+			//String[] MaxArray = hcID.split(",");
+
+			for(int i=0; i<totalMaxArray.length;i++)
+			{
+				String[] MaxArray = totalMaxArray[i].split(",");
+				//System.out.println("Max ID: "+MaxArray[0]+" : "+MaxArray[1]);
+				
+				System.out.println("Chapter: "+MaxArray[0]);
+				driver.get(url+"/chapter/"+MaxArray[0]);
+
+			    	for(int j=0;j<Integer.parseInt(MaxArray[2]);j++)
+			    	{
+			    		
+			    		testcollector=actiondo.unicodeEngMaker(soc.gethadisID(j));
+			    		//System.out.println("HadisID: "+testcollector);
+			    			//System.out.println("Equal J: "+j);
+			    			//System.out.println("HadisID Found: "+testcollector);
+			    			//System.out.println("Missing: "+MissinghadisIDArray.get(t));
+							testcollector1=soc.gethadisAR(j);
+							testcollector2=soc.gethadisNarratedby(j);
+							testcollector3=soc.gethadisBL(j);
+							testcollector4=soc.gethadisSonod(j);
+							
+							testcollector1=testcollector1.replaceAll("'", "");
+							testcollector2=testcollector2.replaceAll("'", "");
+							testcollector3=testcollector3.replaceAll("'", "");
+							//System.out.println("Chapter: "+(i+1)+", HadisID1 : "+testcollector);
+							//System.out.println("HadisAR : "+testcollector1);
+							//System.out.println("HadisNB : "+testcollector2);
+							//System.out.println("HadisBL : "+testcollector3);
+							//System.out.println("HadisSonod : "+testcollector4);
+							actiondo.MysqlHadisInsertData(Integer.parseInt(testcollector), Integer.parseInt(MaxArray[0]), testcollector1, testcollector2, testcollector3, testcollector4, Ownconn);
+
+			    	}
+
+				
+				//http://ihadis.com/books/bukhari/chapter/97
+			}
+			System.out.println("****END****");
+			
+			//driver.quit();
+		} catch (NumberFormatException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			   //Statements to be executed
+			driver.quit();
+		}
+    	
+    }
+	
 	
 	public void MissingHadisCollector(List<Integer> MissinghadisIDArray, String url, Connection conn)
 	{
-		
-		String testcollector="";
-		String testcollector1="";
-		String testcollector2="";
-		String testcollector3="";
-		String testcollector4="";
-		
-		VariableModule variablemodule = new VariableModule();
 		ActionModule actiondo = new ActionModule();
 		WebDriver driver = actiondo.setUp();
-		SOC soc = new SOC(driver);
-    	for(int t=1;t<MissinghadisIDArray.size();t++)//MissinghadisIDArray.size()
-    	{
-		//driver.get(url);
-		//driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
-		//System.out.println("Missing ID: "+MissinghadisIDArray.get(t));
-		
-    	String hcID=ActionModule.MysqlConnectionAction("select hcChapterID,hcMaxID from hadischapter where hcBookID=1", conn, ",");
-    	hcID=hcID.substring(0, hcID.length()-1);
-    	String[] totalMaxArray = hcID.split("\n");
-    	//String[] MaxArray = hcID.split(",");
-    	
-    	for(int i=0; i<totalMaxArray.length;i++)
-    	{
-    		String[] MaxArray = totalMaxArray[i].split(",");
-    		//System.out.println("Max ID: "+MaxArray[0]+" : "+MaxArray[1]);
-    		if(MissinghadisIDArray.get(t)<=Integer.parseInt(MaxArray[1]))
-    		{
-    			//System.out.println("Chapter: "+MaxArray[0]);
-    			driver.get(url+"/chapter/"+MaxArray[0]);
-    			//driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
-    			
-    			String sql="select hcTotalHadis from hadischapter where hcBookID=1 and hcChapterID="+MaxArray[0];
-    			//System.out.println("SQL: "+sql);
-    	    	String total=ActionModule.MysqlConnectionAction(sql, conn, ",");
-    	    	total=total.substring(0, total.length()-1);
-    	    	//System.out.println("Total Chapterwise hadis: "+total);
-    	    	//String[] totalArray = total.split("\n");
-    	    	
-    	    	for(int j=0;j<Integer.parseInt(total);j++)
-    	    	{
-    	    		testcollector=actiondo.unicodeEngMaker(soc.gethadisID(j));
-    	    		//System.out.println("HadisID: "+testcollector);
-    	    		if(MissinghadisIDArray.get(t)==Integer.parseInt(testcollector))
-    	    		{
-    	    			//System.out.println("HadisID Found: "+testcollector);
-    	    			//System.out.println("Missing: "+MissinghadisIDArray.get(t));
-						testcollector1=soc.gethadisAR(j);
-						testcollector2=soc.gethadisNarratedby(j);
-						testcollector3=soc.gethadisBL(j);
-						testcollector4=soc.gethadisSonod(j);
-						
-						testcollector1=testcollector1.replaceAll("'", "");
-						testcollector2=testcollector2.replaceAll("'", "");
-						testcollector3=testcollector3.replaceAll("'", "");
-						//System.out.println("Chapter: "+(i+1)+", HadisID1 : "+testcollector);
-						//System.out.println("HadisAR : "+testcollector1);
-						//System.out.println("HadisNB : "+testcollector2);
-						//System.out.println("HadisBL : "+testcollector3);
-						//System.out.println("HadisSonod : "+testcollector4);
-						actiondo.MysqlHadisInsertData(MissinghadisIDArray.get(t), Integer.parseInt(MaxArray[0]), testcollector1, testcollector2, testcollector3, testcollector4, conn);
-    	    			break;
-    	    		}
-    	    		else
-    	    		{
-    	    			continue;
-    	    		}
-    	    	}
-    			
-    			break;
-    		}
-    		else
-    		{
-    			continue;
-    		}
-    		
-    		//http://ihadis.com/books/bukhari/chapter/97
-    	}
-		
-		//actiondo.MysqlHadisInsertData(Integer.parseInt(ActionModule.unicodeEngMaker(testcollector)), hdChapterID, testcollector1, testcollector2, testcollector3, testcollector4, variabledo.Ownconn);
-    	}
-    	System.out.println("****END****");
-    	
-    	driver.quit();
+		try {
+			String testcollector="";
+			String testcollector1="";
+			String testcollector2="";
+			String testcollector3="";
+			String testcollector4="";
+			
+			//VariableModule variablemodule = new VariableModule();
+			
+			//WebDriver driver = actiondo.setUp();
+			SOC soc = new SOC(driver);
+			for(int t=0;t<MissinghadisIDArray.size();t++)//MissinghadisIDArray.size()
+			{
+			//driver.get(url);
+			//driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+			//System.out.println("Missing ID: "+MissinghadisIDArray.get(t));
+			System.out.println("Missing Hadis ID: "+MissinghadisIDArray.get(t));
+			String hcID=ActionModule.MysqlConnectionAction("select hcChapterID,hcMaxID from hadischapter where hcBookID=6", conn, ",");
+			hcID=hcID.substring(0, hcID.length()-1);
+			String[] totalMaxArray = hcID.split("\n");
+			//String[] MaxArray = hcID.split(",");
+
+			for(int i=0; i<totalMaxArray.length;i++)
+			{
+				String[] MaxArray = totalMaxArray[i].split(",");
+				//System.out.println("Max ID: "+MaxArray[0]+" : "+MaxArray[1]);
+				
+				if(chapter>=Integer.parseInt(MaxArray[0]))
+				{
+					//System.out.println("Test ME Equal!!!");
+					//continue;
+				}
+				else
+				{
+					//System.out.println("Test ME  Not Equal!!!");
+					chapter=Integer.parseInt(MaxArray[0]);
+					temp=0;
+				}
+				
+				if(MissinghadisIDArray.get(t)<=Integer.parseInt(MaxArray[1]))
+				{
+					
+					System.out.println("Chapter: "+MaxArray[0]);
+					driver.get(url+"/chapter/"+MaxArray[0]);
+					//driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+					
+					String sql="select hcTotalHadis from hadischapter where hcBookID=6 and hcChapterID="+MaxArray[0];
+					//System.out.println("SQL: "+sql);
+			    	String total=ActionModule.MysqlConnectionAction(sql, conn, ",");
+			    	total=total.substring(0, total.length()-1);
+			    	//System.out.println("Total Chapterwise hadis: "+total);
+			    	//String[] totalArray = total.split("\n");
+			    	//System.out.println("Before Temp: "+temp);
+			    	for(int j=temp;j<Integer.parseInt(total)-1;j++)
+			    	{
+			    		
+			    		testcollector=actiondo.unicodeEngMaker(soc.gethadisID(j));
+			    		//System.out.println("HadisID: "+testcollector);
+			    		if(MissinghadisIDArray.get(t)==Integer.parseInt(testcollector))
+			    		{
+			    			//System.out.println("Equal J: "+j);
+			    			//System.out.println("HadisID Found: "+testcollector);
+			    			//System.out.println("Missing: "+MissinghadisIDArray.get(t));
+							testcollector1=soc.gethadisAR(j);
+							testcollector2=soc.gethadisNarratedby(j);
+							testcollector3=soc.gethadisBL(j);
+							testcollector4=soc.gethadisSonod(j);
+							
+							testcollector1=testcollector1.replaceAll("'", "");
+							testcollector2=testcollector2.replaceAll("'", "");
+							testcollector3=testcollector3.replaceAll("'", "");
+							//System.out.println("Chapter: "+(i+1)+", HadisID1 : "+testcollector);
+							//System.out.println("HadisAR : "+testcollector1);
+							//System.out.println("HadisNB : "+testcollector2);
+							//System.out.println("HadisBL : "+testcollector3);
+							//System.out.println("HadisSonod : "+testcollector4);
+							actiondo.MysqlHadisInsertData(MissinghadisIDArray.get(t), Integer.parseInt(MaxArray[0]), testcollector1, testcollector2, testcollector3, testcollector4, conn);
+			    			temp=j;
+			    			//System.out.println("Equal Temp: "+temp);
+							break;
+			    		}
+			    		else if(MissinghadisIDArray.get(t)<Integer.parseInt(testcollector))
+			    		{
+			    			break;
+			    		}
+			    		else
+			    		{
+			    			continue;
+			    		}
+			    	}
+					
+					break;
+				}
+				else
+				{
+					continue;
+				}
+				
+				//http://ihadis.com/books/bukhari/chapter/97
+			}
+			
+			//actiondo.MysqlHadisInsertData(Integer.parseInt(ActionModule.unicodeEngMaker(testcollector)), hdChapterID, testcollector1, testcollector2, testcollector3, testcollector4, variabledo.Ownconn);
+			}
+			System.out.println("****END****");
+			
+			//driver.quit();
+		} catch (NumberFormatException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			   //Statements to be executed
+			driver.quit();
+		}
 	}
 	
 	public void ChapterCollectorAction(String url)

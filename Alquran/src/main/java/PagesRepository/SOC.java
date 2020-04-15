@@ -37,6 +37,14 @@ public class SOC {
 		@FindBy(xpath="//span[@class='label validity']")
 		public List<WebElement> hadisSonod;
 		
+		@FindBy(xpath="//div[@class='ayah-upperpart']/span")
+		public List<WebElement> ayatFinder;
+		
+		public String getAyatID(int i){
+
+			return ayatFinder.get(i).getText();
+		}
+		
 		public String gethadisID(int i){
 
 			return hadisID.get(i).getText();

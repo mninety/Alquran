@@ -1,5 +1,6 @@
 package Firebug;
 
+import java.io.IOException;
 //import org.openqa.selenium.webdriver.common.action_chains;
 import java.util.HashMap;
 import java.util.List;
@@ -21,28 +22,28 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import MyAction.ActionModule;
 import MyVariable.VariableModule;
 import Starting.MySQLPINGModule;
+import utils.TestData;
 
 
 
 public class FirebugModule {
 	static Logger logFirebugModule = Logger.getLogger(FirebugModule.class.getName());
 	ActionModule actiondo= new ActionModule();
-    public void FacebookLogin(String post) {
+    public void FacebookLogin(String post) throws IOException {
 
         //WebDriver driver = new FirefoxDriver();
-        WebDriver driver = actiondo.ChromedriverAction();
+    	TestData testdata= new TestData();
+    	WebDriver driver = actiondo.setUp();
         //WebDriver driver = ActionModule.HtmlUnitDriver();
        
         //driver.manage().window().maximize();
-        /*
-        driver.get(VariableModule.Url);
+    	//String MySQLIP = testdata.properties.getProperty("Url");
+        driver.get(testdata.properties.getProperty("Url"));
         driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
-        driver.findElement(By.name("email")).clear();
-        driver.findElement(By.name("email")).sendKeys(VariableModule.FBuserName);
-        driver.findElement(By.name("pass")).clear();
-        driver.findElement(By.name("pass")).sendKeys(VariableModule.FBpwd);
+        driver.findElement(By.name("email")).sendKeys(testdata.properties.getProperty("FBuserName"));
+        driver.findElement(By.name("pass")).sendKeys(testdata.properties.getProperty("FBpwd"));
         driver.findElement(By.xpath("//input[contains(@value,'Log In')]")).click();
-        */
+        
         try {
 			Thread.sleep(10000);
 		} catch (InterruptedException e1) {
@@ -50,9 +51,9 @@ public class FirebugModule {
 			e1.printStackTrace();
 		}                
         System.out.println("logged in successfully");
-        logFirebugModule.debug("logged in successfully");
+        //logFirebugModule.debug("logged in successfully"); 
         
-        driver.findElement(By.className("_3u16")).click();
+        driver.findElement(By.xpath("//div[@class='_3nd0']/div[@role='presentation']")).click();
         //driver.findElement(By.className("_1mf _1mj")).sendKeys("Test");
         WebElement elem=driver.findElement(By.cssSelector("._1mf._1mj"));
         //driver.findElement(By.xpath("//*[@class='_1mf _1mj']")).sendKeys("Test");

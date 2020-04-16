@@ -19,7 +19,7 @@ public class QuranCollector {
 	VariableModule variabledo;
 	ActionModule actiondo;
 	public int temp=0;
-	public int ayatIndex=31;
+	public int ayatIndex=3;
 
 	public void WordbyWordCollector(String url, Connection conn)
 	{
@@ -251,6 +251,93 @@ public class QuranCollector {
 								
 								
 								
+								
+							}
+							ayatIndex++;
+						}
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				
+				ayatIndex=3;
+			}
+			
+			System.out.println("****END****");
+			
+			//driver.quit();
+		} catch (NumberFormatException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			   //Statements to be executed
+			driver.quit();
+		}
+	}
+	
+	public void BanglaTranslationCollector(String url, Connection conn)
+	{
+		ActionModule actiondo = new ActionModule();
+		WebDriver driver = actiondo.setUp();
+		try {
+			String testcollector="";
+			String testcollector1="";
+			String testcollector2="";
+			String testcollector3="";
+			String testcollector4="";
+			
+			//VariableModule variablemodule = new VariableModule();
+			
+			//WebDriver driver = actiondo.setUp();
+			SOC soc = new SOC(driver);
+
+			
+			for(int i=1;i<=114;i++)
+			{
+				driver.get(url+i);
+				try {
+					Thread.sleep(3000);
+				} catch (InterruptedException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				if(i==1)
+				{
+					driver.findElement(By.xpath("//div[@id='collapseOne']//select[2]//option[1]")).click();
+					try {
+						Thread.sleep(2000);
+					} catch (InterruptedException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+				}
+
+				String totalAyat=ActionModule.MysqlConnectionAction("select count(*) from ayat where atSuraID="+i, conn, ",");
+				totalAyat=totalAyat.substring(0, totalAyat.length()-1);
+				
+				System.out.println("totalAyat: "+totalAyat);
+					try {
+						for(int j=1;j<=Integer.parseInt(totalAyat);j++) //Integer.parseInt(totalAyat)
+						{
+							String index=driver.findElement(By.xpath("//div["+ayatIndex+"]//div[1]//div[2]//span")).getText();
+							String[] indexArray= index.split(":");
+							if(j==Integer.parseInt(indexArray[1]))
+							{
+								System.out.println("Sura: "+i);
+								System.out.println("Ayat Index: "+indexArray[1]);
+								String ayatID=ActionModule.MysqlConnectionAction("select atAyatID from ayat where atSuraID="+i+" and atSuraAyatID="+j, conn, ",");
+								ayatID=ayatID.substring(0, ayatID.length()-1);
+								System.out.println("AyatID: "+ayatID);
+
+								String ayatbltext=driver.findElement(By.xpath("//div["+ayatIndex+"]//div[1]//div[3]//div[2]//div[1]")).getText();
+								if(ayatbltext.contains("\'"))
+								{
+									System.out.println("Single qoute found!!!");
+									ayatbltext=ayatbltext.replace("\'", "");
+								}
+								
+								System.out.println("Ayat Text: "+ayatbltext);
+								actiondo.TranslationInsertion(Integer.parseInt(ayatID), ayatbltext, conn);
 								
 							}
 							ayatIndex++;

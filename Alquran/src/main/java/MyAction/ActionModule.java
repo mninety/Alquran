@@ -226,6 +226,39 @@ public class ActionModule {
 	    
 	}
 	
+	public void TranslationInsertion(int atAyatID, String atTranslation_bl, Connection con)
+	{
+		String sql=null;
+	    //Connection conn = null;
+		
+	    java.sql.Statement stmt = null;
+
+	    try {
+	    	//conn=MysqlConnection();
+
+
+	        //System.out.print("\nInserting records into table...");
+	        stmt = con.createStatement();
+
+		        sql = "INSERT INTO ayattranslation (atAyatID,atTranslation_bl)" + " VALUES ("+atAyatID+",'"+atTranslation_bl+"');";
+		        System.out.println(sql);
+		        
+		        stmt.executeUpdate(sql);
+		        System.out.println(" SUCCESS!\n");
+
+	    } catch(SQLException se) {
+	        se.printStackTrace();
+	        //log.debug("E1: "+se);
+	    } catch(Exception e) {
+	        e.printStackTrace();
+	        //log.debug("E2: "+e);
+	    }
+	    //log.debug("Thank you for your patronage!");
+	    //System.out.println("Thank you for your patronage!");
+	    
+	}
+	
+	
 	public static void MysqlChapterInsertData(int hcChapterID, String hcName_bl, int total, int max, Connection con)
 	{
 		String sql=null;

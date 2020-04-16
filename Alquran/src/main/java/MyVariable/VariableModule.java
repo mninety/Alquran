@@ -139,7 +139,7 @@ public class VariableModule {
 	        System.out.println("Connection: "+Ownconn);
 	        //hadiscollector.InsertHadis(163, "http://ihadis.com/books/sahih-hadise-kudsi", Ownconn);
 	        //Missingfindout(4341,Ownconn);
-	        qurancollector.WordbyWordCollector("http://www.quranmazid.com/view/sura/", Ownconn);
+	        qurancollector.BanglaTranslationCollector("http://www.quranmazid.com/view/sura/", Ownconn);
 	        //PostAction(Ownconn);
 	    }catch(Exception e) {
 	        e.printStackTrace();

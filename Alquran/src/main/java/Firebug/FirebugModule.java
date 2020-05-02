@@ -19,10 +19,19 @@ import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import com.restfb.DefaultFacebookClient;
+import com.restfb.FacebookClient;
+import com.restfb.FacebookClient.AccessToken;
+import com.restfb.Parameter;
+import com.restfb.Version;
+import com.restfb.types.FacebookType;
+
 import MyAction.ActionModule;
 import MyVariable.VariableModule;
 import Starting.MySQLPINGModule;
 import utils.TestData;
+
+//import 
 
 
 
@@ -33,6 +42,8 @@ public class FirebugModule {
 
         //WebDriver driver = new FirefoxDriver();
     	TestData testdata= new TestData();
+    	GetAccessToken(post, testdata.properties.getProperty("appID"), testdata.properties.getProperty("appSecret"), testdata.properties.getProperty("accessToken"));
+    	/*
     	WebDriver driver = actiondo.setUp();
         //WebDriver driver = ActionModule.HtmlUnitDriver();
        
@@ -71,6 +82,23 @@ public class FirebugModule {
         System.out.println("Post Successful");
         logFirebugModule.debug("Post Successful");
         driver.quit();
+        */
 
+
+    }
+
+    public void GetAccessToken(String post, String appID, String appSecret, String accessToken)
+    {
+    	Version appVersion=Version.LATEST;
+    	FacebookClient fbclient = new DefaultFacebookClient(accessToken);
+    	AccessToken exAccessToken = fbclient.obtainExtendedAccessToken(appID, appSecret, accessToken);
+    	System.out.println("New Token: "+exAccessToken.getAccessToken());
+    	System.out.println("Expire Time: "+exAccessToken.getExpires());
+    	String finalToken=exAccessToken.getAccessToken();
+    	FacebookType fbResponse = fbclient.publish("me/feed", FacebookType.class, Parameter.with("message", post));
+    	//FacebookType fbResponse = fbclient.publi
+    	
+    	System.out.println("ID: "+fbResponse.getId());
+    	
     }
 }

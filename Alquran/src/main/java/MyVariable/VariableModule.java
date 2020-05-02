@@ -115,6 +115,7 @@ public class VariableModule {
 
     public void CommonThread() throws IOException
     {
+    	FirebugModule fire = new FirebugModule();
 
     	//System.out.println("Current Thread: "+Thread.currentThread().getName());
     	
@@ -139,8 +140,9 @@ public class VariableModule {
 	        System.out.println("Connection: "+Ownconn);
 	        //hadiscollector.InsertHadis(163, "http://ihadis.com/books/sahih-hadise-kudsi", Ownconn);
 	        //Missingfindout(4341,Ownconn);
-	        qurancollector.BanglaTranslationCollector("http://www.quranmazid.com/view/sura/", Ownconn);
-	        //PostAction(Ownconn);
+	        //qurancollector.BanglaTranslationCollector("http://www.quranmazid.com/view/sura/", Ownconn);
+	        FBPost(Ownconn);
+	        //fire.FacebookPOST("Test");
 	    }catch(Exception e) {
 	        e.printStackTrace();
 	    }
@@ -338,6 +340,72 @@ public class VariableModule {
 			{
 				System.out.println("Already Posted");
 			}
+		}
+	}
+
+    public void FBPost(Connection Ownconn) throws IOException
+	{
+		
+		testdata = new TestData();
+		FirebugModule facebook = new FirebugModule();
+		String Post = testdata.properties.getProperty("Post");
+		//String PostID = testdata.properties.getProperty("PostID");
+		System.out.println("Post: "+Post);
+		//String postID="";
+		
+		@SuppressWarnings("unused")
+		boolean flag;
+		String[] postArray = Post.split(":");
+		
+		System.out.println("Sura: "+postArray[0]);
+		System.out.println("Ayat: "+postArray[1]);
+		String[] ayatArray = null;
+		if(postArray[1].indexOf("-") != -1)
+		{
+			flag=true;
+			ayatArray = postArray[1].split("-");
+		}
+		else
+		{
+			flag=false;
+			//ayatArray=postArray[1];
+		}
+		System.out.println("Flag: "+flag);
+		if(flag)
+		{
+			
+
+				String Myquery="select atAyatID from ayat where atSuraID="+postArray[0]+" and atSuraAyatID between "+ayatArray[0]+" and "+ayatArray[1];
+				System.out.println("Select SQL: "+Myquery);
+				String dbData=ActionModule.MysqlConnectionAction(Myquery, Ownconn, ",");
+				dbData=dbData.substring(0, dbData.length()-1);
+				//System.out.println("Data: "+dbData);
+				String SuraName=ActionModule.MysqlConnectionAction("select snName_bl from suraname where snSuraID="+postArray[0], Ownconn, ",");
+				SuraName=SuraName.substring(0, SuraName.length()-1);
+				System.out.println("Data: "+"\""+dbData+"\""+" ---[সুরা "+SuraName+" "+ActionModule.unicodeMaker(postArray[0])+":"+ActionModule.unicodeMaker(ayatArray[0])+"-"+ActionModule.unicodeMaker(ayatArray[1])+"]");
+				//facebook.FacebookLogin("\""+dbData+"\""+" ---[সুরা "+SuraName+" "+ActionModule.unicodeMaker(postArray[0])+":"+ActionModule.unicodeMaker(ayatArray[0])+"-"+ActionModule.unicodeMaker(ayatArray[1])+"]");
+				
+		}
+		else
+		{
+			
+				String Myquery="select atAyatID from ayat where atSuraID="+postArray[0]+" and atSuraAyatID="+postArray[1];
+				//System.out.println("Select SQL: "+Myquery);
+				String dbData=ActionModule.MysqlConnectionAction(Myquery, Ownconn, ",");
+				dbData=dbData.substring(0, dbData.length()-1);
+				//System.out.println("Data: "+dbData);
+				
+				String getBanglaText="select atTranslation_bl from ayattranslation where atAyatID="+dbData;
+				//System.out.println("Select SQL: "+getBanglaText);
+				String BanglaData=ActionModule.MysqlConnectionAction(getBanglaText, Ownconn, ",");
+				BanglaData=BanglaData.substring(0, BanglaData.length()-1);
+				//System.out.println("Data: "+BanglaData);
+				
+				String SuraName=ActionModule.MysqlConnectionAction("select snName_bl from suraname where snSuraID="+postArray[0], Ownconn, ",");
+				SuraName=SuraName.substring(0, SuraName.length()-1);
+				System.out.println("Data: "+"\""+BanglaData+"\""+" ---[সুরা "+SuraName+" "+ActionModule.unicodeMaker(postArray[0])+":"+ActionModule.unicodeMaker(postArray[1])+"]");
+				//facebook.FacebookLogin("\""+BanglaData+"\""+" ---[সুরা "+SuraName+" "+ActionModule.unicodeMaker(postArray[0])+":"+ActionModule.unicodeMaker(postArray[1])+"]");
+				
 		}
 	}
 

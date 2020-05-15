@@ -375,14 +375,14 @@ public class VariableModule {
 		{
 			
 
-				String Myquery="select atAyatID from ayat where atSuraID="+postArray[0]+" and atSuraAyatID between "+ayatArray[0]+" and "+ayatArray[1];
+				String Myquery="select atAyatMeaning_bl from ayat where atSuraID="+postArray[0]+" and atSuraAyatID between "+ayatArray[0]+" and "+ayatArray[1];
 				System.out.println("Select SQL: "+Myquery);
 				String dbData=ActionModule.MysqlConnectionAction(Myquery, Ownconn, ",");
 				dbData=dbData.substring(0, dbData.length()-1);
-				//System.out.println("Data: "+dbData);
+				System.out.println("Data: "+dbData);
 				String SuraName=ActionModule.MysqlConnectionAction("select snName_bl from suraname where snSuraID="+postArray[0], Ownconn, ",");
 				SuraName=SuraName.substring(0, SuraName.length()-1);
-				System.out.println("Data: "+"\""+dbData+"\""+" ---[সুরা "+SuraName+" "+ActionModule.unicodeMaker(postArray[0])+":"+ActionModule.unicodeMaker(ayatArray[0])+"-"+ActionModule.unicodeMaker(ayatArray[1])+"]");
+				System.out.println("Data: "+"\""+dbData+"\""+" ---[সূরা "+SuraName+" "+ActionModule.unicodeMaker(postArray[0])+":"+ActionModule.unicodeMaker(ayatArray[0])+"-"+ActionModule.unicodeMaker(ayatArray[1])+"]");
 				//facebook.FacebookLogin("\""+dbData+"\""+" ---[সুরা "+SuraName+" "+ActionModule.unicodeMaker(postArray[0])+":"+ActionModule.unicodeMaker(ayatArray[0])+"-"+ActionModule.unicodeMaker(ayatArray[1])+"]");
 				
 		}
@@ -403,7 +403,7 @@ public class VariableModule {
 				
 				String SuraName=ActionModule.MysqlConnectionAction("select snName_bl from suraname where snSuraID="+postArray[0], Ownconn, ",");
 				SuraName=SuraName.substring(0, SuraName.length()-1);
-				System.out.println("Data: "+"\""+BanglaData+"\""+" ---[সুরা "+SuraName+" "+ActionModule.unicodeMaker(postArray[0])+":"+ActionModule.unicodeMaker(postArray[1])+"]");
+				System.out.println("Data: "+"\""+BanglaData+"\""+" ---[সূরা "+SuraName+" "+ActionModule.unicodeMaker(postArray[0])+":"+ActionModule.unicodeMaker(postArray[1])+"]");
 				//facebook.FacebookLogin("\""+BanglaData+"\""+" ---[সুরা "+SuraName+" "+ActionModule.unicodeMaker(postArray[0])+":"+ActionModule.unicodeMaker(postArray[1])+"]");
 				
 		}

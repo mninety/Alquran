@@ -376,10 +376,10 @@ public class VariableModule {
 			
 
 				String Myquery="select atAyatMeaning_bl from ayat where atSuraID="+postArray[0]+" and atSuraAyatID between "+ayatArray[0]+" and "+ayatArray[1];
-				System.out.println("Select SQL: "+Myquery);
+				//System.out.println("Select SQL: "+Myquery);
 				String dbData=ActionModule.MysqlConnectionAction(Myquery, Ownconn, ",");
 				dbData=dbData.substring(0, dbData.length()-1);
-				System.out.println("Data: "+dbData);
+				//System.out.println("Data: "+dbData);
 				String SuraName=ActionModule.MysqlConnectionAction("select snName_bl from suraname where snSuraID="+postArray[0], Ownconn, ",");
 				SuraName=SuraName.substring(0, SuraName.length()-1);
 				System.out.println("Data: "+"\""+dbData+"\""+" ---[সূরা "+SuraName+" "+ActionModule.unicodeMaker(postArray[0])+":"+ActionModule.unicodeMaker(ayatArray[0])+"-"+ActionModule.unicodeMaker(ayatArray[1])+"]");
@@ -389,15 +389,9 @@ public class VariableModule {
 		else
 		{
 			
-				String Myquery="select atAyatID from ayat where atSuraID="+postArray[0]+" and atSuraAyatID="+postArray[1];
+				String Myquery="select atAyatMeaning_bl from ayat where atSuraID="+postArray[0]+" and atSuraAyatID="+postArray[1];
 				//System.out.println("Select SQL: "+Myquery);
-				String dbData=ActionModule.MysqlConnectionAction(Myquery, Ownconn, ",");
-				dbData=dbData.substring(0, dbData.length()-1);
-				//System.out.println("Data: "+dbData);
-				
-				String getBanglaText="select atTranslation_bl from ayattranslation where atAyatID="+dbData;
-				//System.out.println("Select SQL: "+getBanglaText);
-				String BanglaData=ActionModule.MysqlConnectionAction(getBanglaText, Ownconn, ",");
+				String BanglaData=ActionModule.MysqlConnectionAction(Myquery, Ownconn, ",");
 				BanglaData=BanglaData.substring(0, BanglaData.length()-1);
 				//System.out.println("Data: "+BanglaData);
 				
